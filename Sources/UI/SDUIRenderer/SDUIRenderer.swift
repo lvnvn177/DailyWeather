@@ -9,22 +9,22 @@ public struct SDUIRenderer {
     
 
     
-    private static func renderComponent(_ component: SDUIComponent, actionHandler: @escaping (SDUIAction?) -> Void) -> some View {
-        switch component.type {
-        case .text:
-            return renderText(component)
-        case .image:
-            return renderImage(component)
-        case .button:
-            return renderButton(component, actionHandler: actionHandler)
-        case .stack:
-            return renderStack(component, actionHandler: actionHandler)
-        case .spacer:
-            return Spacer()
-        case .list:
-            return renderList(component)
-        }
+    private static func renderComponent(_ component: SDUIComponent, actionHandler: @escaping (SDUIAction?) -> Void) -> AnyView {
+    switch component.type {
+    case .text:
+        return AnyView(renderText(component))
+    case .image:
+        return renderImage(component)
+    case .button:
+        return AnyView(renderButton(component, actionHandler: actionHandler))
+    case .stack:
+        return AnyView(renderStack(component, actionHandler: actionHandler))
+    case .spacer:
+        return AnyView(Spacer())
+    case .list:
+        return AnyView(renderList(component))
     }
+}
     
     private static func renderText(_ component: SDUIComponent) -> some View {
         Text(component.content ?? "")
