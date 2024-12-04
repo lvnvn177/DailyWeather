@@ -31,7 +31,7 @@ struct ContentView: View {
     
     private func loadUIFromJSON() {
         print("📱 Starting to load UI from JSON...")
-        
+        print("test")
         // 1. Bundle에서 JSON 파일 찾기
         guard let url = Bundle.main.url(forResource: "weather_ui", withExtension: "json") else {
             print("❌ Failed to find weather_screen.json in bundle")
