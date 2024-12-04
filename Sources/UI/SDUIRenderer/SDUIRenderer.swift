@@ -3,24 +3,26 @@ import SDUIComponent
 import SDUIParser
 
 public struct SDUIRenderer {
-    public static func render(_ component: SDUIComponent) -> AnyView {
-        return AnyView(renderComponent(component))
+    public static func render(_ component: SDUIComponent, actionHandler: @escaping (SDUIAction?) -> Void) -> AnyView {
+        return AnyView(renderComponent(component, actionHandler: actionHandler))
     }
     
-    private static func renderComponent(_ component: SDUIComponent) -> AnyView {
+
+    
+    private static func renderComponent(_ component: SDUIComponent, actionHandler: @escaping (SDUIAction?) -> Void) -> some View {
         switch component.type {
         case .text:
-            return AnyView(renderText(component))
+            return renderText(component)
         case .image:
-            return AnyView(renderImage(component))
+            return renderImage(component)
         case .button:
-            return AnyView(renderButton(component))
+            return renderButton(component, actionHandler: actionHandler)
         case .stack:
-            return AnyView(renderStack(component))
+            return renderStack(component, actionHandler: actionHandler)
         case .spacer:
-            return AnyView(Spacer())
+            return Spacer()
         case .list:
-            return AnyView(renderList(component))
+            return renderList(component)
         }
     }
     
@@ -33,54 +35,46 @@ public struct SDUIRenderer {
             .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
     }
     
-    // private static func renderImage(_ component: SDUIComponent) -> some View {
-    //     AsyncImage(url: URL(string: component.content ?? "")) { phase in
-    //                 switch phase {
-    //                 case .empty:
-    //                     ProgressView()
-    //                 case .success(let image):
-    //                     image
-    //                         .resizable()
-    //                         .scaledToFit()
-    //                         .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
-    //                         .modifier(BackgroundModifier(color: component.style?.backgroundColor))
-    //                         .modifier(PaddingModifier(padding: component.style?.padding))
-    //                         .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
-    //                 case .failure:
-    //                     Image(systemName: "photo")
-    //                 @unknown default:
-    //                     EmptyView()
-    //                 }
-    //             }
-    // }
     private static func renderImage(_ component: SDUIComponent) -> some View {
-    if let content = component.content {
-        if content.hasPrefix("http") || content.hasPrefix("https") {
-            // URL 이미지인 경우 
-            return AnyView(
-                AsyncImage(url: URL(string: content)) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
-                            .modifier(BackgroundModifier(color: component.style?.backgroundColor))
-                            .modifier(PaddingModifier(padding: component.style?.padding))
-                            .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
-                    case .failure:
-                        Image(systemName: "photo")
-                    @unknown default:
-                        EmptyView()
+        if let content = component.content {
+            if content.hasPrefix("http") || content.hasPrefix("https") {
+                // URL 이미지인 경우 
+                return AnyView(
+                    AsyncImage(url: URL(string: content)) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+                                .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+                                .modifier(PaddingModifier(padding: component.style?.padding))
+                                .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+                        case .failure:
+                            Image(systemName: "photo")
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
-                }
-            )
+                )
+            } else {
+                // SF Symbol인 경우
+                return AnyView(
+                    Image(systemName: content)
+                        .resizable()
+                        .scaledToFit()
+                        .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+                        .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+                        .modifier(PaddingModifier(padding: component.style?.padding))
+                        .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+                )
+            }
         } else {
-            // SF Symbol인 경우
+            // 기본 이미지
             return AnyView(
-                Image(systemName: content)
+                Image(systemName: "photo")
                     .resizable()
                     .scaledToFit()
                     .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
@@ -89,24 +83,11 @@ public struct SDUIRenderer {
                     .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
             )
         }
-    } else {
-        // 기본 이미지
-        return AnyView(
-            Image(systemName: "photo")
-                .resizable()
-                .scaledToFit()
-                .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
-                .modifier(BackgroundModifier(color: component.style?.backgroundColor))
-                .modifier(PaddingModifier(padding: component.style?.padding))
-                .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
-        )
     }
-}
     
-    private static func renderButton(_ component: SDUIComponent) -> some View {
+    private static func renderButton(_ component: SDUIComponent, actionHandler: @escaping (SDUIAction?) -> Void) -> some View {
         Button(action: {
-            // Handle action here
-            print("Button tapped: \(component.action?.type ?? "")")
+            actionHandler(component.action)
         }) {
             Text(component.content ?? "")
                 .modifier(FontModifier(size: component.style?.fontSize, weight: component.style?.fontWeight))
@@ -117,12 +98,12 @@ public struct SDUIRenderer {
         }
     }
     
-    private static func renderStack(_ component: SDUIComponent) -> AnyView {
+    private static func renderStack(_ component: SDUIComponent, actionHandler: @escaping (SDUIAction?) -> Void) -> AnyView {
         if component.stackAxis == .horizontal {
             return AnyView(
                 HStack(alignment: .center) {
                     ForEach(component.children ?? [], id: \.id) { child in
-                        renderComponent(child)
+                        renderComponent(child, actionHandler: actionHandler)
                     }
                 }
                 .modifier(BackgroundModifier(color: component.style?.backgroundColor))
@@ -133,7 +114,7 @@ public struct SDUIRenderer {
             return AnyView(
                 VStack(alignment: component.stackAlignment?.alignment ?? .center) {
                     ForEach(component.children ?? [], id: \.id) { child in
-                        renderComponent(child)
+                        renderComponent(child, actionHandler: actionHandler)
                     }
                 }
                 .modifier(BackgroundModifier(color: component.style?.backgroundColor))
@@ -148,7 +129,7 @@ public struct SDUIRenderer {
             ScrollView {
                 LazyVStack {
                     ForEach(component.children ?? [], id: \.id) { child in
-                        renderComponent(child)
+                        renderComponent(child, actionHandler: { _ in })
                     }
                 }
             }
