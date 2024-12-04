@@ -11,6 +11,13 @@
 		7153BB512CF78FBA00E1CAB7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7153BB502CF78FBA00E1CAB7 /* ContentView.swift */; };
 		7153BB532CF78FBB00E1CAB7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7153BB522CF78FBB00E1CAB7 /* Assets.xcassets */; };
 		7153BB562CF78FBB00E1CAB7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7153BB552CF78FBB00E1CAB7 /* Preview Assets.xcassets */; };
+		7153BB5E2CF78FE300E1CAB7 /* ApiManager in Frameworks */ = {isa = PBXBuildFile; productRef = 7153BB5D2CF78FE300E1CAB7 /* ApiManager */; };
+		7153BB602CF78FE300E1CAB7 /* DataManager in Frameworks */ = {isa = PBXBuildFile; productRef = 7153BB5F2CF78FE300E1CAB7 /* DataManager */; };
+		71B6AF8F2CFF857B005F8D06 /* weather_screen.json in Resources */ = {isa = PBXBuildFile; fileRef = 71B6AF8D2CFF857A005F8D06 /* weather_screen.json */; };
+		71D33A832D0023C800BD1224 /* SDUIComponent in Frameworks */ = {isa = PBXBuildFile; productRef = 71D33A822D0023C800BD1224 /* SDUIComponent */; };
+		71D33A852D0023CB00BD1224 /* SDUIParser in Frameworks */ = {isa = PBXBuildFile; productRef = 71D33A842D0023CB00BD1224 /* SDUIParser */; };
+		71D33A872D0023CE00BD1224 /* SDUIRenderer in Frameworks */ = {isa = PBXBuildFile; productRef = 71D33A862D0023CE00BD1224 /* SDUIRenderer */; };
+		71D33A8A2D00243700BD1224 /* weather_ui.json in Resources */ = {isa = PBXBuildFile; fileRef = 71D33A882D00243700BD1224 /* weather_ui.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +26,10 @@
 		7153BB502CF78FBA00E1CAB7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7153BB522CF78FBB00E1CAB7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7153BB552CF78FBB00E1CAB7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		719CA3C02CFB05F800C77975 /* DailyWeather.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DailyWeather.entitlements; sourceTree = "<group>"; };
+		719CA3C12CFB0B2E00C77975 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		71B6AF8D2CFF857A005F8D06 /* weather_screen.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = weather_screen.json; sourceTree = "<group>"; };
+		71D33A892D00243700BD1224 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = en; path = en.lproj/weather_ui.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +37,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71D33A852D0023CB00BD1224 /* SDUIParser in Frameworks */,
+				7153BB602CF78FE300E1CAB7 /* DataManager in Frameworks */,
+				7153BB5E2CF78FE300E1CAB7 /* ApiManager in Frameworks */,
+				71D33A832D0023C800BD1224 /* SDUIComponent in Frameworks */,
+				71D33A872D0023CE00BD1224 /* SDUIRenderer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,6 +53,7 @@
 			children = (
 				7153BB4D2CF78FBA00E1CAB7 /* DailyWeather */,
 				7153BB4C2CF78FBA00E1CAB7 /* Products */,
+				71B6AF942CFF85F6005F8D06 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -51,6 +68,11 @@
 		7153BB4D2CF78FBA00E1CAB7 /* DailyWeather */ = {
 			isa = PBXGroup;
 			children = (
+				71B6AF8E2CFF857A005F8D06 /* UI */,
+				719CA3C12CFB0B2E00C77975 /* Info.plist */,
+				719CA3C02CFB05F800C77975 /* DailyWeather.entitlements */,
+				7153BB6E2CF793B200E1CAB7 /* Views */,
+				7153BB652CF7939C00E1CAB7 /* Services */,
 				7153BB4E2CF78FBA00E1CAB7 /* DailyWeatherApp.swift */,
 				7153BB502CF78FBA00E1CAB7 /* ContentView.swift */,
 				7153BB522CF78FBB00E1CAB7 /* Assets.xcassets */,
@@ -65,6 +87,36 @@
 				7153BB552CF78FBB00E1CAB7 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		7153BB652CF7939C00E1CAB7 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		7153BB6E2CF793B200E1CAB7 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		71B6AF8E2CFF857A005F8D06 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				71B6AF8D2CFF857A005F8D06 /* weather_screen.json */,
+				71D33A882D00243700BD1224 /* weather_ui.json */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		71B6AF942CFF85F6005F8D06 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -83,6 +135,13 @@
 			dependencies = (
 			);
 			name = DailyWeather;
+			packageProductDependencies = (
+				7153BB5D2CF78FE300E1CAB7 /* ApiManager */,
+				7153BB5F2CF78FE300E1CAB7 /* DataManager */,
+				71D33A822D0023C800BD1224 /* SDUIComponent */,
+				71D33A842D0023CB00BD1224 /* SDUIParser */,
+				71D33A862D0023CE00BD1224 /* SDUIRenderer */,
+			);
 			productName = DailyWeather;
 			productReference = 7153BB4B2CF78FBA00E1CAB7 /* DailyWeather.app */;
 			productType = "com.apple.product-type.application";
@@ -111,6 +170,9 @@
 				Base,
 			);
 			mainGroup = 7153BB422CF78FBA00E1CAB7;
+			packageReferences = (
+				7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */,
+			);
 			productRefGroup = 7153BB4C2CF78FBA00E1CAB7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -125,6 +187,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71D33A8A2D00243700BD1224 /* weather_ui.json in Resources */,
+				71B6AF8F2CFF857B005F8D06 /* weather_screen.json in Resources */,
 				7153BB562CF78FBB00E1CAB7 /* Preview Assets.xcassets in Resources */,
 				7153BB532CF78FBB00E1CAB7 /* Assets.xcassets in Resources */,
 			);
@@ -143,6 +207,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		71D33A882D00243700BD1224 /* weather_ui.json */ = {
+			isa = PBXVariantGroup;
+			children = (
+				71D33A892D00243700BD1224 /* en */,
+			);
+			name = weather_ui.json;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		7153BB572CF78FBB00E1CAB7 /* Debug */ = {
@@ -269,17 +344,23 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DailyWeather/DailyWeather.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"DailyWeather/Preview Content\"";
 				DEVELOPMENT_TEAM = J482Q29P6S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DailyWeather/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSLocationUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치의 날씨 정보를 가져오기 위해 위치 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -287,9 +368,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.korea.lvnvn.DailyWeather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -298,17 +383,23 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DailyWeather/DailyWeather.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"DailyWeather/Preview Content\"";
 				DEVELOPMENT_TEAM = J482Q29P6S;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DailyWeather/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSLocationUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "현재 위치의 날씨 정보를 가져오기 위해 위치 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -316,9 +407,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.korea.lvnvn.DailyWeather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -344,6 +439,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lvnvn177/iOS-Module";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7153BB5D2CF78FE300E1CAB7 /* ApiManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */;
+			productName = ApiManager;
+		};
+		7153BB5F2CF78FE300E1CAB7 /* DataManager */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */;
+			productName = DataManager;
+		};
+		71D33A822D0023C800BD1224 /* SDUIComponent */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */;
+			productName = SDUIComponent;
+		};
+		71D33A842D0023CB00BD1224 /* SDUIParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */;
+			productName = SDUIParser;
+		};
+		71D33A862D0023CE00BD1224 /* SDUIRenderer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7153BB5C2CF78FE300E1CAB7 /* XCRemoteSwiftPackageReference "iOS-Module" */;
+			productName = SDUIRenderer;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7153BB432CF78FBA00E1CAB7 /* Project object */;
 }
