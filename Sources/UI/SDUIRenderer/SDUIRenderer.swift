@@ -56,7 +56,7 @@ public struct SDUIRenderer {
     private static func renderImage(_ component: SDUIComponent) -> some View {
     if let content = component.content {
         if content.hasPrefix("http") || content.hasPrefix("https") {
-            // URL 이미지인 경우
+            // URL 이미지인 경우 
             return AnyView(
                 AsyncImage(url: URL(string: content)) { phase in
                     switch phase {
