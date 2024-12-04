@@ -68,7 +68,7 @@
            "content": "상세 정보 보기",
            "style": {
                "fontSize": 20,
-               "backgroundColor": "#007AFF",
+               "backgroundColor": "#666666",
                "foregroundColor": "#FFFFFF",
                "padding": 10,
                "cornerRadius": 8
