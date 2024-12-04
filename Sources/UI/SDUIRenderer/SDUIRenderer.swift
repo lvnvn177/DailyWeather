@@ -57,43 +57,49 @@ public struct SDUIRenderer {
     if let content = component.content {
         if content.hasPrefix("http") || content.hasPrefix("https") {
             // URL 이미지인 경우
-            AsyncImage(url: URL(string: content)) { phase in
-                switch phase {
-                case .empty:
-                    ProgressView()
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFit()
-                        .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
-                        .modifier(BackgroundModifier(color: component.style?.backgroundColor))
-                        .modifier(PaddingModifier(padding: component.style?.padding))
-                        .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
-                case .failure:
-                    Image(systemName: "photo")
-                @unknown default:
-                    EmptyView()
+            return AnyView(
+                AsyncImage(url: URL(string: content)) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+                            .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+                            .modifier(PaddingModifier(padding: component.style?.padding))
+                            .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+                    case .failure:
+                        Image(systemName: "photo")
+                    @unknown default:
+                        EmptyView()
+                    }
                 }
-            }
+            )
         } else {
             // SF Symbol인 경우
-            Image(systemName: content)
+            return AnyView(
+                Image(systemName: content)
+                    .resizable()
+                    .scaledToFit()
+                    .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+                    .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+                    .modifier(PaddingModifier(padding: component.style?.padding))
+                    .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+            )
+        }
+    } else {
+        // 기본 이미지
+        return AnyView(
+            Image(systemName: "photo")
                 .resizable()
                 .scaledToFit()
                 .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
                 .modifier(BackgroundModifier(color: component.style?.backgroundColor))
                 .modifier(PaddingModifier(padding: component.style?.padding))
                 .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
-        }
-    } else {
-        // 기본 이미지
-        Image(systemName: "photo")
-            .resizable()
-            .scaledToFit()
-            .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
-            .modifier(BackgroundModifier(color: component.style?.backgroundColor))
-            .modifier(PaddingModifier(padding: component.style?.padding))
-            .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+        )
     }
 }
     
