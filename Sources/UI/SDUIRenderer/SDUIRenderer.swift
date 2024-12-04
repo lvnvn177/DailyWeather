@@ -33,26 +33,69 @@ public struct SDUIRenderer {
             .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
     }
     
+    // private static func renderImage(_ component: SDUIComponent) -> some View {
+    //     AsyncImage(url: URL(string: component.content ?? "")) { phase in
+    //                 switch phase {
+    //                 case .empty:
+    //                     ProgressView()
+    //                 case .success(let image):
+    //                     image
+    //                         .resizable()
+    //                         .scaledToFit()
+    //                         .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+    //                         .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+    //                         .modifier(PaddingModifier(padding: component.style?.padding))
+    //                         .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+    //                 case .failure:
+    //                     Image(systemName: "photo")
+    //                 @unknown default:
+    //                     EmptyView()
+    //                 }
+    //             }
+    // }
     private static func renderImage(_ component: SDUIComponent) -> some View {
-        AsyncImage(url: URL(string: component.content ?? "")) { phase in
-            switch phase {
-            case .empty:
-                ProgressView()
-            case .success(let image):
-                image
-                    .resizable()
-                    .scaledToFit()
-                    .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
-                    .modifier(BackgroundModifier(color: component.style?.backgroundColor))
-                    .modifier(PaddingModifier(padding: component.style?.padding))
-                    .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
-            case .failure:
-                Image(systemName: "photo")
-            @unknown default:
-                EmptyView()
+    if let content = component.content {
+        if content.hasPrefix("http") || content.hasPrefix("https") {
+            // URL 이미지인 경우
+            AsyncImage(url: URL(string: content)) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                case .success(let image):
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+                        .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+                        .modifier(PaddingModifier(padding: component.style?.padding))
+                        .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
+                case .failure:
+                    Image(systemName: "photo")
+                @unknown default:
+                    EmptyView()
+                }
             }
+        } else {
+            // SF Symbol인 경우
+            Image(systemName: content)
+                .resizable()
+                .scaledToFit()
+                .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+                .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+                .modifier(PaddingModifier(padding: component.style?.padding))
+                .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
         }
+    } else {
+        // 기본 이미지
+        Image(systemName: "photo")
+            .resizable()
+            .scaledToFit()
+            .modifier(FrameModifier(width: component.style?.width, height: component.style?.height))
+            .modifier(BackgroundModifier(color: component.style?.backgroundColor))
+            .modifier(PaddingModifier(padding: component.style?.padding))
+            .modifier(CornerRadiusModifier(radius: component.style?.cornerRadius))
     }
+}
     
     private static func renderButton(_ component: SDUIComponent) -> some View {
         Button(action: {
