@@ -14,7 +14,7 @@ public struct SDUIRenderer {
     case .text:
         return AnyView(renderText(component))
     case .image:
-        return renderImage(component)
+        return renderImage(component) as! AnyView
     case .button:
         return AnyView(renderButton(component, actionHandler: actionHandler))
     case .stack:
