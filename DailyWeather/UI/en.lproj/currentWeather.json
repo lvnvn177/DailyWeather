@@ -1,0 +1,176 @@
+{
+   "type": "stack",
+   "id": "weather_container",
+   "stackAxis": "vertical",
+   "stackAlignment": "center",
+   "style": {
+       "padding": 20,
+       "backgroundColor": "#FFFFFF"
+   },
+   "children": [
+       {
+           "type": "text",
+           "id": "location_name",
+           "content": "현재 위치",
+           "style": {
+               "fontSize": 24,
+               "fontWeight": 600,
+               "foregroundColor": "#333333"
+           }
+       },
+       {
+           "type": "image",
+           "id": "weather_icon",
+           "content": "cloud.sun.fill",
+           "style": {
+               "width": 120,
+               "height": 120,
+               "foregroundColor": "#007AFF"
+           }
+       },
+       {
+           "type": "text",
+           "id": "temperature",
+           "content": "--°",
+           "style": {
+               "fontSize": 64,
+               "fontWeight": 700
+           }
+       },
+       {
+           "type": "stack",
+           "id": "details_container",
+           "stackAxis": "horizontal",
+           "stackAlignment": "center",
+           "style": {
+               "padding": 30,
+               "backgroundColor": "#FFFFFF",
+               "cornerRadius": 12,
+               "width": 300,
+               "spacing": 32
+           },
+           "children": [
+               {
+                   "type": "stack",
+                   "id": "feels_like_container",
+                   "stackAxis": "vertical",
+                   "stackAlignment": "center",
+                   "style": {
+                       "spacing": 4
+                   },
+                   "children": [
+                       {
+                           "type": "text",
+                           "id": "feels_like_label",
+                           "content": "체감온도",
+                           "style": {
+                               "fontSize": 12,
+                               "foregroundColor": "#999999"
+                           }
+                       },
+                       {
+                           "type": "text",
+                           "id": "feels_like_value",
+                           "content": "--°",
+                           "style": {
+                               "fontSize": 16,
+                               "foregroundColor": "#333333",
+                               "fontWeight": 500
+                           }
+                       }
+                   ]
+               },
+               {
+                   "type": "stack",
+                   "id": "humidity_container",
+                   "stackAxis": "vertical",
+                   "stackAlignment": "center",
+                   "style": {
+                       "spacing": 4
+                   },
+                   "children": [
+                       {
+                           "type": "text",
+                           "id": "humidity_label",
+                           "content": "습도",
+                           "style": {
+                               "fontSize": 12,
+                               "foregroundColor": "#999999"
+                           }
+                       },
+                       {
+                           "type": "text",
+                           "id": "humidity_value",
+                           "content": "--%",
+                           "style": {
+                               "fontSize": 16,
+                               "foregroundColor": "#333333",
+                               "fontWeight": 500
+                           }
+                       }
+                   ]
+               },
+               {
+                   "type": "stack",
+                   "id": "wind_container",
+                   "stackAxis": "vertical",
+                   "stackAlignment": "center",
+                   "style": {
+                       "spacing": 4
+                   },
+                   "children": [
+                       {
+                           "type": "text",
+                           "id": "wind_label",
+                           "content": "풍속",
+                           "style": {
+                               "fontSize": 12,
+                               "foregroundColor": "#999999"
+                           }
+                       },
+                       {
+                           "type": "text",
+                           "id": "wind_value",
+                           "content": "--m/s",
+                           "style": {
+                               "fontSize": 16,
+                               "foregroundColor": "#333333",
+                               "fontWeight": 500
+                           }
+                       }
+                   ]
+               },
+               {
+                   "type": "stack",
+                   "id": "pressure_container",
+                   "stackAxis": "vertical",
+                   "stackAlignment": "center",
+                   "style": {
+                       "spacing": 4
+                   },
+                   "children": [
+                       {
+                           "type": "text",
+                           "id": "pressure_label",
+                           "content": "기압",
+                           "style": {
+                               "fontSize": 12,
+                               "foregroundColor": "#999999"
+                           }
+                       },
+                       {
+                           "type": "text",
+                           "id": "pressure_value",
+                           "content": "--hPa",
+                           "style": {
+                               "fontSize": 16,
+                               "foregroundColor": "#333333",
+                               "fontWeight": 500
+                           }
+                       }
+                   ]
+               }
+           ]
+       },
+   ]
+}
