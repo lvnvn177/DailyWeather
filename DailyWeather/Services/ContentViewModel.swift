@@ -6,7 +6,7 @@ import SDUIRenderer
 import WeatherKit
 import CoreLocation
 
-class ContentViewModel: ObservableObject {
+class ContentViewModel: NSObject,ObservableObject {
     @Published var currentWeathercomponent: SDUIComponent?
     @Published var hourlyForecastComponent: SDUIComponent?
     @Published var navigateToDetail: Bool = false
@@ -15,22 +15,42 @@ class ContentViewModel: ObservableObject {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     
-    init() {
-//        setupLocationManager()
+    override init() {
+        super.init()
+        setupLocationManager()
         loadUIFromJSON()
         
-        Task {
-            print("test1")
-            await fetchWeather(location: CLLocation(latitude: 43, longitude: -76))
-            print("test")
-        }
+//        Task {
+//          
+//            await fetchWeather(location: CLLocation(latitude: 43, longitude: -76))
+//           
+//        }
     }
     
-//    private func setupLocationManager() {
-//        locationManager.delegate = self
-//        locationManager.requestWhenInUseAuthorization()
-//        locationManager.startUpdatingLocation()
-//    }
+    private func setupLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    private func checkLocationAuthorization() {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+        case .restricted, .denied:
+            print("위치 서비스 권한이 없습니다.")
+            // 기본 위치 사용 (예: 서울)
+            let defaultLocation = CLLocation(latitude: 37.5665, longitude: 126.9780)
+            Task {
+                await fetchWeather(location: defaultLocation)
+            }
+        case .authorizedAlways, .authorizedWhenInUse:
+            locationManager.startUpdatingLocation()
+        @unknown default:
+            break
+        }
+    }
+
     
     func loadUIFromJSON() {
         do {
@@ -66,14 +86,7 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        guard let location = locations.first else { return }
-//        currentLocation = location
-//        
-//        Task {
-//            await fetchWeatherData()
-//        }
-//    }
+
     
     
     func fetchWeather(location: CLLocation) async {
@@ -129,23 +142,7 @@ class ContentViewModel: ObservableObject {
             objectWillChange.send()
         }
     }
-//
-//    private func createHourlyForecasts(from forecast: Forecast) -> [HourlyForecast] {
-//        let calendar = Calendar.current
-//        let now = Date()
-//        
-//        return forecast.forecast.prefix(24).enumerated().map { index, hourWeather in
-//            let hour = calendar.component(.hour, from: hourWeather.date)
-//            let timeString = index == 0 ? "지금" : "\(hour)시"
-//            let temp = Int(round(hourWeather.temperature.value))
-//            
-//            return HourlyForecast(
-//                time: timeString,
-//                temperature: "\(temp)°",
-//                icon: getWeatherIcon(for: hourWeather.condition), condition: <#String#>
-//            )
-//        }
-//    }
+
     
     private func getWeatherIcon(for condition: WeatherCondition) -> String {
         switch condition {
@@ -168,16 +165,50 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-//    @MainActor
-//    private func updateHourlyForecastJSON(with forecasts: [HourlyForecast]) {
-//        let hourlyJSON = createHourlyForecastJSON(with: forecasts)
-//        
-//        do {
-//            self.hourlyForecastComponent = try SDUIParser.shared.loadFromJSONSafely(hourlyJSON)
-//        } catch {
-//            print("❌ Error updating hourly forecast: \(error)")
-//        }
-//    }
+
 }
 
+extension ContentViewModel: CLLocationManagerDelegate {
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        checkLocationAuthorization()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.first else { return }
+        currentLocation = location
+        
+        // 위치를 한 번 받았으면 업데이트 중지
+        locationManager.stopUpdatingLocation()
+        
+        // 위치 정보로 날씨 데이터 가져오기
+        Task {
+            await fetchWeather(location: location)
+            await getLocationName(for: location)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("위치 정보 오류: \(error.localizedDescription)")
+        // 오류 발생 시 기본 위치 사용
+        let defaultLocation = CLLocation(latitude: 37.5665, longitude: 126.9780)
+        Task {
+            await fetchWeather(location: defaultLocation)
+        }
+    }
+    
+    // 위치의 지역 이름 가져오기
+    private func getLocationName(for location: CLLocation) async {
+        let geocoder = CLGeocoder()
+        do {
+            if let placemark = try await geocoder.reverseGeocodeLocation(location).first {
+                await MainActor.run {
+                    let locationName = placemark.locality ?? placemark.administrativeArea ?? "알 수 없는 위치"
+                    currentWeathercomponent?.updateContent(locationName, for: "location_name")
+                }
+            }
+        } catch {
+            print("지역 이름 가져오기 실패: \(error.localizedDescription)")
+        }
+    }
+}
 
