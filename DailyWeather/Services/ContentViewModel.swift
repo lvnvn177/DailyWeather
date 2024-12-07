@@ -106,6 +106,7 @@ class ContentViewModel: NSObject,ObservableObject {
                 let weatherIcon = getWeatherIcon(for: weather.currentWeather.condition)
                 currentWeathercomponent?.updateContent(weatherIcon, for: "weather_icon")
                 
+                
                 // UI 컴포넌트 업데이트
                 updateWeatherUI(
                     feelsLike: feelsLike,
@@ -114,6 +115,8 @@ class ContentViewModel: NSObject,ObservableObject {
                     windSpeed: windSpeed,
                     pressure: pressure
                 )
+                
+                updateHourlyForecast(weather.hourlyForecast.forecast)
             }
         } catch {
             print("Error fetching weather: \(error)")
@@ -142,22 +145,110 @@ class ContentViewModel: NSObject,ObservableObject {
             objectWillChange.send()
         }
     }
+    
+
+    
+    private func updateHourlyForecast(_ forecasts: [HourWeather]) {
+        // 24시간 예보만 사용
+        let next24Hours = Array(forecasts.prefix(24))
+        
+        // 각 시간대별 수직 스택 생성
+        let forecastItems = next24Hours.enumerated().map { index, forecast in
+            // 각 시간대별 수직 스택
+            SDUIComponent(
+                type: .stack,
+                id: "forecast_item_\(index)",
+                style: SDUIStyle(
+                    padding: 8,
+                    spacing: 8
+                ),
+                children: [
+                    // 시간
+                    SDUIComponent(
+                        type: .text,
+                        id: "time_\(index)",
+                        content: index == 0 ? "지금" : formatTime(forecast.date),
+                        style: SDUIStyle(
+                            foregroundColor: "#666666",
+                            fontSize: 14,
+                            alignment: .center
+                        )
+                    ),
+                    // 아이콘
+                    SDUIComponent(
+                        type: .image,
+                        id: "icon_\(index)",
+                        content: getWeatherIcon(for: forecast.condition),
+                        style: SDUIStyle(
+                            foregroundColor: "#007AFF",
+                            width: 30,
+                            height: 30
+                        )
+                    ),
+                    // 온도
+                    SDUIComponent(
+                        type: .text,
+                        id: "temp_\(index)",
+                        content: "\(Int(round(forecast.temperature.value)))°",
+                        style: SDUIStyle(
+                            foregroundColor: "#333333",
+                            fontSize: 16,
+                            fontWeight: 600,
+                            alignment: .center
+                        )
+                    )
+                ],
+                stackAxis: .vertical,
+                stackAlignment: .center
+            )
+        }
+        
+        // forecast_items_container 업데이트
+        hourlyForecastComponent?.updateContent(forecastItems, for: "forecast_items_container")
+        objectWillChange.send()
+    }
+    
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
+    
+
 
     
     private func getWeatherIcon(for condition: WeatherCondition) -> String {
-        switch condition {
-        case .clear:
-            return "sun.max.fill"
-        case .cloudy:
-            return "cloud.fill"
-        case .partlyCloudy:
-            return "cloud.sun.fill"
-        case .rain:
-            return "cloud.rain.fill"
-        default:
-            return "cloud.fill"
+            switch condition {
+            case .clear:
+                return "sun.max.fill"
+            case .cloudy:
+                return "cloud.fill"
+            case .mostlyClear:
+                return "sun.max.fill"
+            case .mostlyCloudy:
+                return "cloud.sun.fill"
+            case .partlyCloudy:
+                return "cloud.sun.fill"
+            case .rain:
+                return "cloud.rain.fill"
+            case .snow:
+                return "cloud.snow.fill"
+            case .sleet:
+                return "cloud.sleet.fill"
+            case .windy:
+                return "wind"
+            case .drizzle:
+                return "cloud.drizzle.fill"
+            case .thunderstorms:
+                return "cloud.bolt.rain.fill"
+//            case .fog:
+//                return "cloud.fog.fill"
+            case .haze:
+                return "sun.haze.fill"
+            default:
+                return "cloud.fill"
+            }
         }
-    }
     
     private func refreshWeather() {
         Task {

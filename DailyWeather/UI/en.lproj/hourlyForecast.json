@@ -1,198 +1,44 @@
 {
-    "type": "stack",
-    "id": "hourly_forecast_section",
-    "stackAxis": "vertical",
-    "stackAlignment": "leading",
-    "style": {
-        "backgroundColor": "#FFFFFF",
-        "cornerRadius": 12,
-        "padding": 16,
-        "width": 300,
-        "margin": 20
+  "type": "stack",
+  "id": "hourly_forecast_container",
+  "stackAxis": "vertical",
+  "stackAlignment": "leading",
+  "style": {
+    "height": 200
+  },
+  "children": [
+    {
+      "type": "text",
+      "id": "hourly_title",
+      "content": "시간별 예보",
+      "style": {
+        "fontSize": 20,
+        "fontWeight": 600,
+        "foregroundColor": "#333333",
+        "padding": 16
+      }
     },
-    "children": [
+    {
+      "type": "scroll",
+      "id": "hourly_scroll",
+      "scrollAxis": "horizontal",
+      "style": {
+        "padding": 8,
+        "height": 150
+      },
+      "children": [
         {
-            "type": "text",
-            "id": "hourly_title",
-            "content": "시간별 날씨",
-            "style": {
-                "fontSize": 16,
-                "fontWeight": 600,
-                "foregroundColor": "#333333",
-                "marginBottom": 12
-            }
-        },
-        {
-            "type": "stack",
-            "id": "hourly_scroll_container",
-            "stackAxis": "horizontal",
-            "stackAlignment": "center",
-            "style": {
-                "spacing": 24,
-                "padding": 8
-            },
-            "children": [
-                {
-                    "type": "stack",
-                    "id": "hour_1",
-                    "stackAxis": "vertical",
-                    "stackAlignment": "center",
-                    "style": {
-                        "spacing": 8
-                    },
-                    "children": [
-                        {
-                            "type": "text",
-                            "id": "hour_1_time",
-                            "content": "지금",
-                            "style": {
-                                "fontSize": 14,
-                                "foregroundColor": "#666666"
-                            }
-                        },
-                        {
-                            "type": "image",
-                            "id": "hour_1_icon",
-                            "content": "cloud.sun.fill",
-                            "style": {
-                                "width": 28,
-                                "height": 28,
-                                "foregroundColor": "#007AFF"
-                            }
-                        },
-                        {
-                            "type": "text",
-                            "id": "hour_1_temp",
-                            "content": "23°",
-                            "style": {
-                                "fontSize": 16,
-                                "fontWeight": 500,
-                                "foregroundColor": "#333333"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "stack",
-                    "id": "hour_2",
-                    "stackAxis": "vertical",
-                    "stackAlignment": "center",
-                    "style": {
-                        "spacing": 8
-                    },
-                    "children": [
-                        {
-                            "type": "text",
-                            "id": "hour_2_time",
-                            "content": "13시",
-                            "style": {
-                                "fontSize": 14,
-                                "foregroundColor": "#666666"
-                            }
-                        },
-                        {
-                            "type": "image",
-                            "id": "hour_2_icon",
-                            "content": "cloud.fill",
-                            "style": {
-                                "width": 28,
-                                "height": 28,
-                                "foregroundColor": "#007AFF"
-                            }
-                        },
-                        {
-                            "type": "text",
-                            "id": "hour_2_temp",
-                            "content": "24°",
-                            "style": {
-                                "fontSize": 16,
-                                "fontWeight": 500,
-                                "foregroundColor": "#333333"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "stack",
-                    "id": "hour_3",
-                    "stackAxis": "vertical",
-                    "stackAlignment": "center",
-                    "style": {
-                        "spacing": 8
-                    },
-                    "children": [
-                        {
-                            "type": "text",
-                            "id": "hour_3_time",
-                            "content": "14시",
-                            "style": {
-                                "fontSize": 14,
-                                "foregroundColor": "#666666"
-                            }
-                        },
-                        {
-                            "type": "image",
-                            "id": "hour_3_icon",
-                            "content": "sun.max.fill",
-                            "style": {
-                                "width": 28,
-                                "height": 28,
-                                "foregroundColor": "#007AFF"
-                            }
-                        },
-                        {
-                            "type": "text",
-                            "id": "hour_3_temp",
-                            "content": "25°",
-                            "style": {
-                                "fontSize": 16,
-                                "fontWeight": 500,
-                                "foregroundColor": "#333333"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "type": "stack",
-                    "id": "hour_4",
-                    "stackAxis": "vertical",
-                    "stackAlignment": "center",
-                    "style": {
-                        "spacing": 8
-                    },
-                    "children": [
-                        {
-                            "type": "text",
-                            "id": "hour_4_time",
-                            "content": "15시",
-                            "style": {
-                                "fontSize": 14,
-                                "foregroundColor": "#666666"
-                            }
-                        },
-                        {
-                            "type": "image",
-                            "id": "hour_4_icon",
-                            "content": "sun.max.fill",
-                            "style": {
-                                "width": 28,
-                                "height": 28,
-                                "foregroundColor": "#007AFF"
-                            }
-                        },
-                        {
-                            "type": "text",
-                            "id": "hour_4_temp",
-                            "content": "25°",
-                            "style": {
-                                "fontSize": 16,
-                                "fontWeight": 500,
-                                "foregroundColor": "#333333"
-                            }
-                        }
-                    ]
-                }
-            ]
+          "type": "stack",
+          "id": "forecast_items_container",
+          "stackAxis": "horizontal",
+          "stackAlignment": "leading",
+          "style": {
+            "padding": 8,
+            "spacing": 16
+          },
+          "children": []
         }
-    ]
+      ]
+    }
+  ]
 }
