@@ -15,7 +15,7 @@
            "style": {
                "fontSize": 24,
                "fontWeight": 600,
-               "foregroundColor": "#333333"
+               "foregroundColor": "#FFFFFF"
            }
        },
        {
@@ -23,9 +23,9 @@
            "id": "weather_icon",
            "content": "cloud.sun.fill",
            "style": {
-               "width": 120,
-               "height": 120,
-               "foregroundColor": "#007AFF"
+               "width": 60,
+               "height": 60,
+               "foregroundColor": "#FFFFFF"
            }
        },
        {
@@ -34,7 +34,8 @@
            "content": "--°",
            "style": {
                "fontSize": 64,
-               "fontWeight": 700
+               "fontWeight": 700,
+               "foregroundColor": "#FFFFFF"
            }
        },
        {
@@ -65,7 +66,7 @@
                            "content": "체감온도",
                            "style": {
                                "fontSize": 12,
-                               "foregroundColor": "#999999"
+                               "foregroundColor": "#FFFFFF"
                            }
                        },
                        {
@@ -74,7 +75,7 @@
                            "content": "--°",
                            "style": {
                                "fontSize": 16,
-                               "foregroundColor": "#333333",
+                               "foregroundColor": "#FFFFFF",
                                "fontWeight": 500
                            }
                        }
@@ -95,7 +96,7 @@
                            "content": "습도",
                            "style": {
                                "fontSize": 12,
-                               "foregroundColor": "#999999"
+                               "foregroundColor": "#FFFFFF"
                            }
                        },
                        {
@@ -104,7 +105,7 @@
                            "content": "--%",
                            "style": {
                                "fontSize": 16,
-                               "foregroundColor": "#333333",
+                               "foregroundColor": "#FFFFFF",
                                "fontWeight": 500
                            }
                        }
@@ -125,7 +126,7 @@
                            "content": "풍속",
                            "style": {
                                "fontSize": 12,
-                               "foregroundColor": "#999999"
+                               "foregroundColor": "#FFFFFF"
                            }
                        },
                        {
@@ -134,7 +135,7 @@
                            "content": "--m/s",
                            "style": {
                                "fontSize": 16,
-                               "foregroundColor": "#333333",
+                               "foregroundColor": "#FFFFFF",
                                "fontWeight": 500
                            }
                        }
@@ -155,7 +156,7 @@
                            "content": "기압",
                            "style": {
                                "fontSize": 12,
-                               "foregroundColor": "#999999"
+                               "foregroundColor": "#FFFFFF"
                            }
                        },
                        {
@@ -164,13 +165,13 @@
                            "content": "--hPa",
                            "style": {
                                "fontSize": 16,
-                               "foregroundColor": "#333333",
+                               "foregroundColor": "#FFFFFF",
                                "fontWeight": 500
                            }
                        }
                    ]
                }
            ]
-       },
+       }
    ]
 }

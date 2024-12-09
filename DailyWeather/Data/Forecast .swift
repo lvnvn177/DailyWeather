@@ -18,3 +18,4 @@ struct HourlyForecast {
     let icon: String
     let condition: String
 }
+		

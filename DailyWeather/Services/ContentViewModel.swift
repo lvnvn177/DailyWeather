@@ -169,7 +169,7 @@ class ContentViewModel: NSObject,ObservableObject {
                         id: "time_\(index)",
                         content: index == 0 ? "지금" : formatTime(forecast.date),
                         style: SDUIStyle(
-                            foregroundColor: "#666666",
+                            foregroundColor: "#FFFFFF",
                             fontSize: 14,
                             alignment: .center
                         )
@@ -180,7 +180,7 @@ class ContentViewModel: NSObject,ObservableObject {
                         id: "icon_\(index)",
                         content: getWeatherIcon(for: forecast.condition),
                         style: SDUIStyle(
-                            foregroundColor: "#007AFF",
+                            foregroundColor: "#FFFFFF",
                             width: 30,
                             height: 30
                         )
@@ -191,7 +191,7 @@ class ContentViewModel: NSObject,ObservableObject {
                         id: "temp_\(index)",
                         content: "\(Int(round(forecast.temperature.value)))°",
                         style: SDUIStyle(
-                            foregroundColor: "#333333",
+                            foregroundColor: "#FFFFFF",
                             fontSize: 16,
                             fontWeight: 600,
                             alignment: .center
@@ -213,6 +213,7 @@ class ContentViewModel: NSObject,ObservableObject {
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: date)
     }
+    
     
 
 
@@ -241,8 +242,6 @@ class ContentViewModel: NSObject,ObservableObject {
                 return "cloud.drizzle.fill"
             case .thunderstorms:
                 return "cloud.bolt.rain.fill"
-//            case .fog:
-//                return "cloud.fog.fill"
             case .haze:
                 return "sun.haze.fill"
             default:
