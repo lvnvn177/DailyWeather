@@ -6,14 +6,18 @@ import SDUIRenderer
 
 struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
-        
+    @State private var address: String = ""
+    
     var body: some View {
         ZStack {
-//            LinearGradient(gradient: Gradient(colors: [Color.blue, Color.white]), startPoint: .top, endPoint: .bottom)
-//                .edgesIgnoringSafeArea(.all)
-            
             NavigationStack {
                 VStack(spacing: 0) {
+//                    TextField("주소를 입력하세요", text: $address, onCommit: {
+//                        viewModel.fetchSearch(for: address)
+//                    })
+//                    .textFieldStyle(RoundedBorderTextFieldStyle())
+//                    .padding()
+                    
                     if let currentWeather = viewModel.currentWeathercomponent {
                         SDUIRenderer.render(currentWeather, actionHandler: viewModel.handleAction)
                             .frame(maxHeight: UIScreen.main.bounds.height * 0.6)

@@ -5,6 +5,7 @@ import SDUIComponent
 import SDUIRenderer
 import WeatherKit
 import CoreLocation
+import ApiManager
 
 class ContentViewModel: NSObject,ObservableObject {
     @Published var currentWeathercomponent: SDUIComponent?
@@ -88,6 +89,33 @@ class ContentViewModel: NSObject,ObservableObject {
     
 
     
+//    func fetchSearch(for address: String) {
+//          geocodeAddress(address) { location in
+//              guard let location = location else {
+//                  print("주소를 변환할 수 없습니다.")
+//                  return
+//              }
+//              print("주소 변환 성공: \(location)")
+//              Task {
+//                  await self.fetchWeather(location: location)
+//              }
+//          }
+//      }
+//    
+//    private func geocodeAddress(_ address: String, completion: @escaping (CLLocation?) -> Void) {
+//            let geocoder = CLGeocoder()
+//            geocoder.geocodeAddressString(address) { placemarks, error in
+//                if let error = error {
+//                    print("주소 변환 오류: \(error.localizedDescription)")
+//                    completion(nil)
+//                    return
+//                }
+//                completion(placemarks?.first?.location)
+//            }
+//        }
+    
+
+    
     
     func fetchWeather(location: CLLocation) async {
         do {
@@ -150,10 +178,13 @@ class ContentViewModel: NSObject,ObservableObject {
     
     private func updateHourlyForecast(_ forecasts: [HourWeather]) {
         // 24시간 예보만 사용
-        let next24Hours = Array(forecasts.prefix(24))
+        let now = Date()
+//        let next24Hours = Array(forecasts.prefix(24))
+        let next24Hours = Calendar.current.date(byAdding: .hour, value: 24, to: now)!
         
+        let filteredForecasts = forecasts.filter { $0.date >= now && $0.date <= next24Hours }
         // 각 시간대별 수직 스택 생성
-        let forecastItems = next24Hours.enumerated().map { index, forecast in
+        let forecastItems = filteredForecasts.enumerated().map { index, forecast in
             // 각 시간대별 수직 스택
             SDUIComponent(
                 type: .stack,
