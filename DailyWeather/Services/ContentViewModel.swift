@@ -6,15 +6,18 @@ import SDUIRenderer
 import WeatherKit
 import CoreLocation
 import ApiManager
+import MapKit
 
 class ContentViewModel: NSObject,ObservableObject {
     @Published var currentWeathercomponent: SDUIComponent?
     @Published var hourlyForecastComponent: SDUIComponent?
+    @Published var addressCandidates: [MKLocalSearchCompletion] = []
     @Published var navigateToDetail: Bool = false
     
     private let weatherService = WeatherService.init()
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
+    private var searchCompleter = MKLocalSearchCompleter()
     
     override init() {
         super.init()
@@ -87,35 +90,30 @@ class ContentViewModel: NSObject,ObservableObject {
         }
     }
     
-
+    func searchAddress(_ address: String) {
+        searchCompleter.queryFragment = address
+    }
     
-//    func fetchSearch(for address: String) {
-//          geocodeAddress(address) { location in
-//              guard let location = location else {
-//                  print("주소를 변환할 수 없습니다.")
-//                  return
-//              }
-//              print("주소 변환 성공: \(location)")
-//              Task {
-//                  await self.fetchWeather(location: location)
-//              }
-//          }
-//      }
-//    
-//    private func geocodeAddress(_ address: String, completion: @escaping (CLLocation?) -> Void) {
-//            let geocoder = CLGeocoder()
-//            geocoder.geocodeAddressString(address) { placemarks, error in
-//                if let error = error {
-//                    print("주소 변환 오류: \(error.localizedDescription)")
-//                    completion(nil)
-//                    return
-//                }
-//                completion(placemarks?.first?.location)
-//            }
-//        }
     
-
-    
+     func selectAddress(_ completion: MKLocalSearchCompletion) {
+         let searchRequest = MKLocalSearch.Request(completion: completion)
+         let search = MKLocalSearch(request: searchRequest)
+         search.start { response, error in
+             if let error = error {
+                 print("주소 검색 오류: \(error.localizedDescription)")
+                 return
+             }
+             guard let response = response, let mapItem = response.mapItems.first else {
+                 print("주소 검색 결과가 없습니다.")
+                 return
+             }
+             let location = mapItem.placemark.location
+             Task {
+                 await self.fetchWeather(location: location!)
+             }
+         }
+     }
+        
     
     func fetchWeather(location: CLLocation) async {
         do {
