@@ -8,7 +8,7 @@ import CoreLocation
 import ApiManager
 import MapKit
 
-class ContentViewModel: NSObject,ObservableObject {
+class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegate {
     @Published var currentWeathercomponent: SDUIComponent?
     @Published var hourlyForecastComponent: SDUIComponent?
     @Published var addressCandidates: [MKLocalSearchCompletion] = []
@@ -18,17 +18,18 @@ class ContentViewModel: NSObject,ObservableObject {
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var searchCompleter = MKLocalSearchCompleter()
+   
     
     override init() {
         super.init()
         setupLocationManager()
+        setupSearchCompleter()
         loadUIFromJSON()
-        
-//        Task {
-//          
-//            await fetchWeather(location: CLLocation(latitude: 43, longitude: -76))
-//           
-//        }
+    }
+    
+    private func setupSearchCompleter() {
+        searchCompleter.delegate = self
+        searchCompleter.resultTypes = .address
     }
     
     private func setupLocationManager() {
@@ -94,6 +95,12 @@ class ContentViewModel: NSObject,ObservableObject {
         searchCompleter.queryFragment = address
     }
     
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+            addressCandidates = completer.results
+            print("검색 결과 업데이트: \(completer.results)")
+    }
+    
+    
     
      func selectAddress(_ completion: MKLocalSearchCompletion) {
          let searchRequest = MKLocalSearch.Request(completion: completion)
@@ -108,8 +115,10 @@ class ContentViewModel: NSObject,ObservableObject {
                  return
              }
              let location = mapItem.placemark.location
+             let locationName = mapItem.name ?? "알 수 없는 위치"
              Task {
                  await self.fetchWeather(location: location!)
+                 await self.updateLocationName(locationName)
              }
          }
      }
@@ -282,6 +291,11 @@ class ContentViewModel: NSObject,ObservableObject {
         Task {
             await fetchWeather(location: CLLocation(latitude: 43, longitude: -76))
         }
+    }
+    
+    private func updateLocationName(_ locationName: String) async {
+        currentWeathercomponent?.updateContent(locationName, for: "location_name")
+        objectWillChange.send()
     }
     
 

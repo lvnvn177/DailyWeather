@@ -59,40 +59,46 @@ struct ContentView: View {
         }
     }
     
-    struct AddressSearchView: View {
-        @ObservedObject var viewModel: ContentViewModel
-        @Binding var address: String
+  
+}
+
+struct AddressSearchView: View {
+    @ObservedObject var viewModel: ContentViewModel
+    @Binding var address: String
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                TextField("주소를 입력하세요", text: $address, onCommit: {
+                    viewModel.searchAddress(address)
+                })
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+                .onChange(of: address) { old, newValue in
+                    viewModel.searchAddress(newValue)
+                }
         
-        var body: some View {
-            NavigationView {
-                VStack {
-                    TextField("주소를 입력하세요", text: $address, onCommit: {
-                        viewModel.searchAddress(address)
-                    })
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                    .onChange(of: address) { newValue in
-                        viewModel.searchAddress(newValue)
-                    }
-                    
-                    List(viewModel.addressCandidates, id: \.self) { candidate in
-                        Button(action: {
-                            viewModel.selectAddress(candidate)
-                        }) {
-                            VStack(alignment: .leading) {
-                                Text(candidate.title)
-                                    .font(.headline)
-                                Text(candidate.subtitle)
-                                    .font(.subheadline)
-                            }
+                
+                List(viewModel.addressCandidates, id: \.self) { candidate in
+                    Button(action: {
+                        viewModel.selectAddress(candidate)
+                        dismiss()
+                    }) {
+                        
+                        VStack(alignment: .leading) {
+                            Text(candidate.title)
+                                .font(.headline)
+                            Text(candidate.subtitle)
+                                .font(.subheadline)
                         }
                     }
                 }
-                .navigationTitle("주소 검색")
-                .navigationBarItems(trailing: Button("닫기") {
-                    viewModel.addressCandidates.removeAll()
-                })
             }
+            .navigationTitle("주소 검색")
+            .navigationBarItems(trailing: Button("닫기") {
+                viewModel.addressCandidates.removeAll()
+            })
         }
     }
 }
