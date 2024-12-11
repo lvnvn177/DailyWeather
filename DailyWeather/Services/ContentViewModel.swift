@@ -96,8 +96,10 @@ class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegat
     }
     
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-            addressCandidates = completer.results
-            print("검색 결과 업데이트: \(completer.results)")
+        DispatchQueue.main.async {
+                    self.addressCandidates = completer.results
+                    print("검색 결과 업데이트: \(completer.results)")
+                }
     }
     
     
@@ -242,8 +244,10 @@ class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegat
         }
         
         // forecast_items_container 업데이트
-        hourlyForecastComponent?.updateContent(forecastItems, for: "forecast_items_container")
-        objectWillChange.send()
+        DispatchQueue.main.async {
+                    self.hourlyForecastComponent?.updateContent(forecastItems, for: "forecast_items_container")
+                    self.objectWillChange.send()
+                }
     }
     
     private func formatTime(_ date: Date) -> String {
@@ -294,9 +298,11 @@ class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegat
     }
     
     private func updateLocationName(_ locationName: String) async {
-        currentWeathercomponent?.updateContent(locationName, for: "location_name")
-        objectWillChange.send()
-    }
+            DispatchQueue.main.async {
+                self.currentWeathercomponent?.updateContent(locationName, for: "location_name")
+                self.objectWillChange.send()
+            }
+        }
     
 
 }
