@@ -4,62 +4,111 @@ import SDUIComponent
 import SDUIParser
 import SDUIRenderer
 
+
 struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
     @State private var address: String = ""
     @State private var showSearchSheet = false
     
     var body: some View {
-        ZStack {
-            NavigationStack {
-                VStack(spacing: 0) {
-                    Button(action: {
-                        showSearchSheet.toggle()
-                    }) {
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                            Text("주소 검색")
+        NavigationStack {
+            VStack(spacing: 0) {
+//                if viewModel.locationWeathers.isEmpty {
+                    // 위치가 없을 때 표시할 뷰
+                    
+                
+                    // 날씨 페이지들
+                    TabView(selection: $viewModel.currentPageIndex) {
+                        ForEach(viewModel.locationWeathers.indices, id: \.self) { index in
+                            WeatherPageView(
+                                currentWeather: viewModel.locationWeathers[index].currentWeatherComponent,
+                                hourlyForecast: viewModel.locationWeathers[index].hourlyForecastComponent
+                            ) { action in
+                                viewModel.handleAction(action)
+                            }
+                            .tag(index)
                         }
-                        .padding()
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    
-                    if let currentWeather = viewModel.currentWeathercomponent {
-                        SDUIRenderer.render(currentWeather, actionHandler: viewModel.handleAction)
-                            .frame(maxHeight: UIScreen.main.bounds.height * 0.6)
-                    }
-                    
-                    if let hourlyForecastComponent = viewModel.hourlyForecastComponent {
-                        SDUIRenderer.render(hourlyForecastComponent, actionHandler: viewModel.handleAction)
-                            .frame(minHeight: 200)  // 최소 높이 지정
-                            .frame(maxHeight: UIScreen.main.bounds.height * 0.3)  // 최대 높이 지정
-                    }
-                    
-                    if viewModel.currentWeathercomponent == nil || viewModel.hourlyForecastComponent == nil {
-                        Spacer()
-                        ProgressView()
-                        Spacer()
-                    }
+                    .tabViewStyle(.page(indexDisplayMode: .automatic))
+                    .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+                
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    searchButton
                 }
-                .background(
-                    LinearGradient(gradient: Gradient(colors: [Color.blue, Color.white]), startPoint: .top, endPoint: .bottom)
-                        .edgesIgnoringSafeArea(.all)
-                )
-                .onAppear {
-                    Task {
-                        await viewModel.fetchWeather(location: CLLocation(latitude: 37.5665, longitude: 126.9780))
+                if !viewModel.locationWeathers.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(action: {
+                            viewModel.removeLocation(at: viewModel.currentPageIndex)
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 24))
+                                .foregroundStyle(.white)
+                        }
                     }
-                }
-                .sheet(isPresented: $showSearchSheet) {
-                    AddressSearchView(viewModel: viewModel, address: $address)
                 }
             }
-            .background(Color.blue)
+            .background(
+                LinearGradient(gradient: Gradient(colors: [Color.blue, Color.white]),
+                              startPoint: .top,
+                              endPoint: .bottom)
+                    .edgesIgnoringSafeArea(.all)
+            )
         }
+        .sheet(isPresented: $showSearchSheet) {
+            AddressSearchView(viewModel: viewModel, address: $address)
+        }
+       
     }
     
-  
+    private var searchButton: some View {
+        Button(action: {
+            showSearchSheet.toggle()
+        }) {
+            HStack {
+                Image(systemName: "magnifyingglass")
+                Text("주소 검색")
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color.white.opacity(0.2))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+}
+
+
+struct WeatherPageView: View {
+    let currentWeather: SDUIComponent?
+    let hourlyForecast: SDUIComponent?
+    let onAction: (SDUIAction?) -> Void
+    
+    var body: some View {
+        VStack {
+            if let currentWeather = currentWeather {
+                SDUIRendererView(component: currentWeather) { action in
+                    onAction(action)
+                }
+            }
+            
+            if let hourlyForecast = hourlyForecast {
+                SDUIRendererView(component: hourlyForecast) { action in
+                    onAction(action)
+                }
+            }
+        }
+    }
+}
+
+// SDUIRendererView 래퍼 추가
+struct SDUIRendererView: View {
+    let component: SDUIComponent
+    let onAction: (SDUIAction?) -> Void
+    
+    var body: some View {
+        SDUIRenderer(component: component, onAction: onAction)
+    }
 }
 
 struct AddressSearchView: View {
@@ -78,14 +127,13 @@ struct AddressSearchView: View {
                 .onChange(of: address) { old, newValue in
                     viewModel.searchAddress(newValue)
                 }
-        
+                
                 
                 List(viewModel.addressCandidates, id: \.self) { candidate in
                     Button(action: {
                         viewModel.selectAddress(candidate)
                         dismiss()
                     }) {
-                        
                         VStack(alignment: .leading) {
                             Text(candidate.title)
                                 .font(.headline)
@@ -102,111 +150,12 @@ struct AddressSearchView: View {
         }
     }
 }
+
+// ContentViewModel 를 활용해서 지역을 추가 시 해당 추가된 지역 포함 모든 지역의 날씨 뷰를 보여줄 수 있도록 구현
+
+
 #Preview {
     ContentView()
 }
 
-//import SwiftUI
-//import CoreLocation
-//import SDUIComponent
-//import SDUIParser
-//import SDUIRenderer
-//import MapKit
-//
-//struct ContentView: View {
-//    @StateObject private var viewModel = ContentViewModel()
-//    @State private var address: String = ""
-//    @State private var showAddressSearch = false
-//    
-//    var body: some View {
-//        ZStack {
-//            LinearGradient(gradient: Gradient(colors: [Color.blue, Color.white]), startPoint: .top, endPoint: .bottom)
-//                .edgesIgnoringSafeArea(.all)
-//            
-//            NavigationStack {
-//                VStack(spacing: 0) {
-//                    Button(action: {
-//                        showAddressSearch.toggle()
-//                    }) {
-//                        HStack {
-//                            Image(systemName: "magnifyingglass")
-//                            Text("주소 검색")
-//                        }
-//                        .padding()
-//                        .background(Color.white)
-//                        .cornerRadius(8)
-//                    }
-//                    
-//                    if let currentWeather = viewModel.currentWeathercomponent {
-//                        SDUIRenderer.render(currentWeather, actionHandler: viewModel.handleAction)
-//                            .background(Color.clear)
-//                            .frame(maxHeight: UIScreen.main.bounds.height * 0.6)
-//                    }
-//                    
-//                    if let hourlyForecastComponent = viewModel.hourlyForecastComponent {
-//                        SDUIRenderer.render(hourlyForecastComponent, actionHandler: viewModel.handleAction)
-//                            .background(Color.clear)
-//                            .frame(minHeight: 200)
-//                            .frame(maxHeight: UIScreen.main.bounds.height * 0.3)
-//                    }
-//                    
-//                    if viewModel.currentWeathercomponent == nil || viewModel.hourlyForecastComponent == nil {
-//                        Spacer()
-//                        ProgressView()
-//                        Spacer()
-//                    }
-//                }
-//                .background(
-//                    LinearGradient(gradient: Gradient(colors: [Color.blue, Color.white]), startPoint: .top, endPoint: .bottom)
-//                        .edgesIgnoringSafeArea(.all)
-//                )
-//                .onAppear {
-//                    Task {
-//                        await viewModel.fetchWeather(for: "서울")
-//                    }
-//                }
-//                .sheet(isPresented: $showAddressSearch) {
-//                    AddressSearchView(viewModel: viewModel, address: $address)
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//struct AddressSearchView: View {
-//    @ObservedObject var viewModel: ContentViewModel
-//    @Binding var address: String
-//    
-//    var body: some View {
-//        NavigationView {
-//            VStack {
-//                TextField("주소를 입력하세요", text: $address, onCommit: {
-//                    viewModel.searchAddress(address)
-//                })
-//                .textFieldStyle(RoundedBorderTextFieldStyle())
-//                .padding()
-//                
-//                List(viewModel.addressCandidates, id: \.self) { candidate in
-//                    Button(action: {
-//                        viewModel.selectAddress(candidate)
-//                    }) {
-//                        VStack(alignment: .leading) {
-//                            Text(candidate.title)
-//                                .font(.headline)
-//                            Text(candidate.subtitle)
-//                                .font(.subheadline)
-//                        }
-//                    }
-//                }
-//            }
-//            .navigationTitle("주소 검색")
-//            .navigationBarItems(trailing: Button("닫기") {
-//                viewModel.addressCandidates.removeAll()
-//            })
-//        }
-//    }
-//}
-//
-//#Preview {
-//    ContentView()
-//}
+

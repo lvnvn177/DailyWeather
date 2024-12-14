@@ -1,30 +1,39 @@
 // ContentViewModel.swift
 import SwiftUI
+
 import SDUIParser
 import SDUIComponent
 import SDUIRenderer
+
+import ApiManager
+import UserDataManager
+
+import MapKit
 import WeatherKit
 import CoreLocation
-import ApiManager
-import MapKit
-
 class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegate {
     @Published var currentWeathercomponent: SDUIComponent?
     @Published var hourlyForecastComponent: SDUIComponent?
     @Published var addressCandidates: [MKLocalSearchCompletion] = []
     @Published var navigateToDetail: Bool = false
-    
+    @Published var locations: [String] = []
+    @Published var locationWeathers: [LocationWeather] = []
+    @Published var currentPageIndex: Int = 0
+
     private let weatherService = WeatherService.init()
     private let locationManager = CLLocationManager()
     private var currentLocation: CLLocation?
     private var searchCompleter = MKLocalSearchCompleter()
-   
+    
+    private let dataManager = UserDataManager<String>()
+    private let locationsKey = "savedLocations"
     
     override init() {
         super.init()
         setupLocationManager()
         setupSearchCompleter()
         loadUIFromJSON()
+        loadSavedLocations()
     }
     
     private func setupSearchCompleter() {
@@ -121,6 +130,7 @@ class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegat
              Task {
                  await self.fetchWeather(location: location!)
                  await self.updateLocationName(locationName)
+                 await self.showAddLocationAlert(locationName: locationName)
              }
          }
      }
@@ -302,9 +312,204 @@ class ContentViewModel: NSObject,ObservableObject, MKLocalSearchCompleterDelegat
                 self.currentWeathercomponent?.updateContent(locationName, for: "location_name")
                 self.objectWillChange.send()
             }
-        }
+    }
     
+    private func showAddLocationAlert(locationName: String) async {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "지역 추가", message: "\(locationName)을(를) 추가하시겠습니까?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            alert.addAction(UIAlertAction(title: "추가", style: .default, handler: { _ in
+                self.addLocation(locationName: locationName)
+            }))
+            
+//            let scenes = UIApplication.shared.connectedScenes
+//            let windowScene = scenes.first as? UIWindowScene
+//            let window = windowScene?.windows.first
+            
+            if let topController = UIApplication.shared.connectedScenes
+                           .filter({ $0.activationState == .foregroundActive })
+                           .compactMap({ $0 as? UIWindowScene })
+                           .first?.windows
+                           .filter({ $0.isKeyWindow }).first?.rootViewController {
+                           topController.present(alert, animated: true, completion: nil)
+                       }
+        }
+    }
+    
+    private func addLocation(locationName: String) {
+        DispatchQueue.main.async {
+            self.locations.append(locationName)
+            self.dataManager.saveItem(self.locations, forKey: self.locationsKey)
+            
+            let newWeatherLocation = LocationWeather(
+                locationName: locationName,
+                currentWeatherComponent: try? SDUIParser.loadFromJSON(fileName: "currentWeather"),
+                hourlyForecastComponent: try? SDUIParser.loadFromJSON(fileName: "hourlyForecast")
+            )
+            
+            self.locationWeathers.append(newWeatherLocation)
+            
+            self.fetchWeatherForLocation(locationName)
 
+            self.objectWillChange.send()
+        }
+    }
+
+    private func fetchWeatherForLocation(_ locationName: String) {
+        let searchRequest = MKLocalSearch.Request()
+        searchRequest.naturalLanguageQuery = locationName
+
+        let search = MKLocalSearch(request: searchRequest)
+              search.start { [weak self] response, error in
+                  guard let self = self,
+                        let coordinate = response?.mapItems.first?.placemark.coordinate else { return }
+                  let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            
+                  Task {
+                                  do {
+                                      let weather = try await WeatherService.shared.weather(for: location)
+                                      
+                                      await MainActor.run {
+                                          // 날씨 데이터 추출
+                                          let temperature = "\(Int(round(weather.currentWeather.temperature.value)))°"
+                                          let feelsLike = "\(Int(round(weather.currentWeather.apparentTemperature.value)))°"
+                                          let humidity = "\(Int(round(weather.currentWeather.humidity * 100)))%"
+                                          let windSpeed = "\(Int(round(weather.currentWeather.wind.speed.value)))m/s"
+                                          let pressure = "\(Int(round(weather.currentWeather.pressure.value)))hPa"
+                                          let weatherIcon = self.getWeatherIcon(for: weather.currentWeather.condition)
+                                          
+                                          // 해당 위치의 날씨 데이터 업데이트
+                                          if let index = self.locationWeathers.firstIndex(where: { $0.locationName == locationName }) {
+                                              self.locationWeathers[index].updateWeatherData(
+                                                  temperature: temperature,
+                                                  feelsLike: feelsLike,
+                                                  humidity: humidity,
+                                                  windSpeed: windSpeed,
+                                                  pressure: pressure,
+                                                  weatherIcon: weatherIcon
+                                              )
+                                              
+                                              // 시간별 예보 업데이트
+                                              let forecastItems = self.createHourlyForecastComponents(weather.hourlyForecast.forecast)
+                                              self.locationWeathers[index].updateHourlyForecast(forecastItems)
+                                          }
+                                          
+                                          self.objectWillChange.send()
+                                      }
+                                  } catch {
+                                      print("Error fetching weather: \(error)")
+                                  }
+            }
+        }
+    }
+    
+    private func createHourlyForecastComponents(_ forecasts: [HourWeather]) -> [SDUIComponent] {
+            let now = Date()
+            let next24Hours = Calendar.current.date(byAdding: .hour, value: 24, to: now)!
+            let filteredForecasts = forecasts.filter { $0.date >= now && $0.date <= next24Hours }
+            
+            return filteredForecasts.enumerated().map { index, forecast in
+                SDUIComponent(
+                    type: .stack,
+                    id: "forecast_item_\(index)",
+                    style: SDUIStyle(
+                        padding: 8,
+                        spacing: 8
+                    ),
+                    children: [
+                        SDUIComponent(
+                            type: .text,
+                            id: "time_\(index)",
+                            content: index == 0 ? "지금" : formatTime(forecast.date),
+                            style: SDUIStyle(
+                                foregroundColor: "#FFFFFF",
+                                fontSize: 14,
+                                alignment: .center
+                            )
+                        ),
+                        SDUIComponent(
+                            type: .image,
+                            id: "icon_\(index)",
+                            content: getWeatherIcon(for: forecast.condition),
+                            style: SDUIStyle(
+                                foregroundColor: "#FFFFFF",
+                                width: 30,
+                                height: 30
+                            )
+                        ),SDUIComponent(
+                            type: .text,
+                            id: "temp_\(index)",
+                            content: "\(Int(round(forecast.temperature.value)))°",
+                            style: SDUIStyle(
+                                foregroundColor: "#FFFFFF",
+                                fontSize: 16,
+                                fontWeight: 600,
+                                alignment: .center
+                            )
+                        )
+                    ],
+                    stackAxis: .vertical,
+                    stackAlignment: .center
+                )
+            }
+        }
+
+    
+    private func loadSavedLocations() {
+        DispatchQueue.main.async {
+            self.locations = self.dataManager.loadItem(forKey: self.locationsKey)
+            
+            for locationName in self.locations {
+                let weatherLocation = LocationWeather(
+                    locationName: locationName,
+                    currentWeatherComponent: try? SDUIParser.loadFromJSON(fileName: "currentWeather"),
+                    hourlyForecastComponent: try? SDUIParser.loadFromJSON(fileName: "hourlyForecast")
+                )
+                self.locationWeathers.append(weatherLocation)
+                
+                self.fetchWeatherForLocation(locationName)
+            }
+            
+            self.objectWillChange.send()
+        }
+    }
+    
+    func removeLocation(at index: Int) {
+        guard index < locations.count else { return }
+        
+        let locationName = locations[index]
+        
+        // 삭제 확인 알림 표시
+        let alert = UIAlertController(
+            title: "위치 삭제",
+            message: "\(locationName)을(를) 삭제하시겠습니까?",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel))
+        alert.addAction(UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            
+            // 현재 페이지 인덱스 조정
+            if self.currentPageIndex >= self.locations.count - 1 {
+                self.currentPageIndex = max(0, self.locations.count - 2)
+            }
+            
+            // 위치 및 관련 데이터 삭제
+            self.locations.remove(at: index)
+            self.locationWeathers.remove(at: index)
+            self.dataManager.saveItem(self.locations, forKey: self.locationsKey)
+            
+            // UI 업데이트
+            self.objectWillChange.send()
+        })
+        
+        // 알림 표시
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let viewController = windowScene.windows.first?.rootViewController {
+            viewController.present(alert, animated: true)
+        }
+    }
 }
 
 extension ContentViewModel: CLLocationManagerDelegate {
